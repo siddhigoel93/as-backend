@@ -1,4 +1,4 @@
-const mockAttendance = require("../data/mockAttendance");
+const mockAttendance = require("../data/mockAttendance.js");
 
 
 /**
