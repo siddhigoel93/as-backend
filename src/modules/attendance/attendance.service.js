@@ -1,5 +1,4 @@
-const mockAttendance = require("../data/mockAttendance.js");
-
+const mockAttendance = require("./attendance.model.js");
 
 /**
  * @param {number} month 

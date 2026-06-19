@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getAttendance } = require("../controllers/attendanceController.js");
+const { getAttendance } = require("./attendance.controller.js");
 
 router.get("/", getAttendance);
 

@@ -1,4 +1,4 @@
-const { getAttendanceByMonth } = require("../services/attendanceService.js");
+const { getAttendanceByMonth } = require("./attendance.service.js");
 
 async function getAttendance(req, res, next) {
   try {

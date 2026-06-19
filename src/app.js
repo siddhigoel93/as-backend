@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const attendanceRoutes = require("./routes/attendanceRoutes.js");
+
+const attendanceRoutes = require("./modules/attendance/attendance.routes.js");
+const authRoutes = require("./modules/auth/auth.routes.js");
 
 const app = express();
 
@@ -8,12 +10,13 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "*", // e.g. "https://your-app.com" in production
+    origin: "*", 
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ status: "ok", message: "ERP Backend is running " });
