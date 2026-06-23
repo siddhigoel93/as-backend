@@ -169,4 +169,162 @@ async function markAttendance(req, res, next) {
   }
 }
 
-module.exports = { getAttendance, markAttendance };
+async function getClassAttendance(req, res, next) {
+  try {
+    const { classId } = req.params;
+    const { month, year } = req.query;
+
+    if (!month) {
+      return res.status(400).json({
+        success: false,
+        message: "Query param 'month' is required."
+      });
+    }
+
+    const monthNum = parseInt(month, 10);
+    const yearNum = year ? parseInt(year, 10) : new Date().getUTCFullYear();
+
+    if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid 'month'. Must be a number between 1 and 12."
+      });
+    }
+
+    if (isNaN(yearNum) || yearNum < 1900 || yearNum > 2100) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid 'year'."
+      });
+    }
+
+    // Build UTC date range: first to last day of month UTC
+    const startDate = new Date(Date.UTC(yearNum, monthNum - 1, 1, 0, 0, 0, 0));
+    const endDate = new Date(Date.UTC(yearNum, monthNum, 0, 23, 59, 59, 999));
+
+    // Fetch the class by classId — 404 if not found
+    const classData = await Class.findById(classId);
+    if (!classData) {
+      return res.status(404).json({
+        success: false,
+        message: "Class not found"
+      });
+    }
+
+    // If req.user.role === "teacher", verify class.classTeacher.toString() === req.user.id else return 403
+    if (req.user.role === "teacher") {
+      if (!classData.classTeacher || classData.classTeacher.toString() !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden"
+        });
+      }
+    }
+
+    // Fetch all attendance records for that classId within the date range
+    const records = await Attendance.find({
+      classId,
+      date: { $gte: startDate, $lte: endDate }
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: records
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateAttendance(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { records } = req.body;
+
+    // Fetch the attendance record by id, 404 if not found
+    const record = await Attendance.findById(id);
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "Attendance record not found"
+      });
+    }
+
+    // Fetch the class from record.classId
+    const classData = await Class.findById(record.classId);
+    if (!classData) {
+      return res.status(404).json({
+        success: false,
+        message: "Associated class not found"
+      });
+    }
+
+    // If req.user.role === "teacher", verify class.classTeacher.toString() === req.user.id else return 403
+    if (req.user.role === "teacher") {
+      if (!classData.classTeacher || classData.classTeacher.toString() !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden"
+        });
+      }
+    }
+
+    // If class isActive === false, return 400
+    if (classData.isActive === false) {
+      return res.status(400).json({
+        success: false,
+        message: "Class is inactive"
+      });
+    }
+
+    // Fetch the current active roster via User.find({ classId: record.classId, role: 'student', isActive: true }, '_id')
+    const rosterUsers = await User.find({ classId: record.classId, role: 'student', isActive: true }, '_id');
+    const roster = rosterUsers.map(u => u._id.toString());
+
+    if (!records || !Array.isArray(records)) {
+      return res.status(400).json({
+        success: false,
+        message: "records must be an array"
+      });
+    }
+
+    // Validate every student in submitted records exists in that roster — return 400 listing invalid IDs if any fail
+    const invalidIds = [];
+    for (const rec of records) {
+      if (!rec.student || !roster.includes(rec.student.toString())) {
+        invalidIds.push(rec.student || "null");
+      }
+    }
+    if (invalidIds.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid student IDs",
+        invalidIds
+      });
+    }
+
+    // Validate records.length === roster.length — return 400 if incomplete
+    if (records.length !== roster.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Incomplete student records"
+      });
+    }
+
+    // Update records and markedBy: req.user.id, return 200 with updated document
+    record.records = records;
+    record.markedBy = req.user.id;
+    const updatedRecord = await record.save();
+
+    return res.status(200).json({
+      success: true,
+      data: updatedRecord
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { getAttendance, markAttendance, getClassAttendance, updateAttendance };
