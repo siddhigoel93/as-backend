@@ -36,7 +36,7 @@ const classSchema = new mongoose.Schema(
   }
 );
 
-// Add a unique compound index on name + section with case-insensitive collation
+
 classSchema.index(
   { name: 1, section: 1 },
   {
