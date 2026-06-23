@@ -7,6 +7,7 @@ const attendanceRoutes = require("./modules/attendance/attendance.routes.js");
 const authRoutes = require("./modules/auth/auth.routes.js");
 const holidayRoutes = require("./modules/holidays/holiday.routes.js");
 const classRoutes = require("./modules/classes/class.routes.js");
+const userRoutes = require("./modules/users/user.routes.js");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/holidays", holidayRoutes);
 app.use("/api/classes", classRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ status: "ok", message: "ERP Backend is running " });

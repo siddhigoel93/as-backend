@@ -29,7 +29,8 @@ const userSchema = new mongoose.Schema(
 
     classId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Class"
+      ref: "Class",
+      default: null
     },
 
     isApproved: {
@@ -44,5 +45,7 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.index({ classId: 1, role: 1 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -327,4 +327,73 @@ async function updateAttendance(req, res, next) {
   }
 }
 
-module.exports = { getAttendance, markAttendance, getClassAttendance, updateAttendance };
+async function getMyAttendance(req, res, next) {
+  try {
+    const { month, year } = req.query;
+
+    if (!month) {
+      return res.status(400).json({
+        success: false,
+        message: "Query param 'month' is required."
+      });
+    }
+
+    const monthNum = parseInt(month, 10);
+    const yearNum = year ? parseInt(year, 10) : new Date().getUTCFullYear();
+
+    if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid 'month'. Must be a number between 1 and 12."
+      });
+    }
+
+    if (isNaN(yearNum) || yearNum < 1900 || yearNum > 2100) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid 'year'."
+      });
+    }
+
+    const startDate = new Date(Date.UTC(yearNum, monthNum - 1, 1, 0, 0, 0, 0));
+    const endDate = new Date(Date.UTC(yearNum, monthNum, 0, 23, 59, 59, 999));
+
+    // Query records using $elemMatch for student req.user.id
+    const records = await Attendance.find({
+      date: { $gte: startDate, $lte: endDate },
+      records: { $elemMatch: { student: req.user.id } }
+    });
+
+    // Extract only that student's status entry from each record
+    const mappedRecords = records.map(r => {
+      const sub = r.records.find(s => s.student.toString() === req.user.id);
+      return {
+        date: r.date,
+        status: sub ? sub.status : null
+      };
+    }).filter(x => x.status !== null);
+
+    const totalMarkedDays = mappedRecords.length;
+    const presentDays = mappedRecords.filter(r => r.status === "Present").length;
+    const absentDays = mappedRecords.filter(r => r.status === "Absent").length;
+    const attendancePercentage = totalMarkedDays > 0 
+      ? parseFloat(((presentDays / totalMarkedDays) * 100).toFixed(2)) 
+      : 0;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        totalMarkedDays,
+        presentDays,
+        absentDays,
+        attendancePercentage,
+        records: mappedRecords
+      }
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { getAttendance, markAttendance, getClassAttendance, updateAttendance, getMyAttendance };
