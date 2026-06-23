@@ -36,7 +36,6 @@ const attendanceSchema = new mongoose.Schema(
   }
 );
 
-// Add a unique compound index on classId + date
 attendanceSchema.index({ classId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model("Attendance", attendanceSchema);

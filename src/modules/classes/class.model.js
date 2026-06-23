@@ -12,7 +12,7 @@ const classSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-        classTeacher: {
+    classTeacher: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true

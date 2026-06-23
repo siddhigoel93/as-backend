@@ -27,6 +27,11 @@ const userSchema = new mongoose.Schema(
       default: "student"
     },
 
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class"
+    },
+
     isApproved: {
       type: Boolean,
       default: true
