@@ -12,26 +12,10 @@ async function validateTeacher(teacherId) {
   }
 }
 
-// Helper to validate students role
-async function validateStudents(studentIds) {
-  if (!studentIds || !Array.isArray(studentIds)) return false;
-  if (studentIds.length === 0) return true;
-  try {
-    const uniqueIds = [...new Set(studentIds)];
-    const validStudents = await User.find({
-      _id: { $in: uniqueIds },
-      role: "student"
-    });
-    return validStudents.length === uniqueIds.length;
-  } catch (error) {
-    return false;
-  }
-}
-
 // POST /api/classes (Admin only)
 const createClass = async (req, res, next) => {
   try {
-    const { name, section, classTeacher, students } = req.body;
+    const { name, section, classTeacher } = req.body;
 
     if (!name || !section || !classTeacher) {
       return res.status(400).json({
@@ -49,22 +33,10 @@ const createClass = async (req, res, next) => {
       });
     }
 
-    // Validate students exist and are students
-    if (students !== undefined) {
-      const areStudentsValid = await validateStudents(students);
-      if (!areStudentsValid) {
-        return res.status(400).json({
-          success: false,
-          message: "All students must be valid users with 'student' role"
-        });
-      }
-    }
-
     const newClass = await Class.create({
       name,
       section,
-      classTeacher,
-      students: students || []
+      classTeacher
     });
 
     res.status(201).json({
@@ -92,8 +64,7 @@ const getClasses = async (req, res, next) => {
     }
 
     const classes = await Class.find(query)
-      .populate("classTeacher", "name email role")
-      .populate("students", "name email role");
+      .populate("classTeacher", "name email role");
 
     res.status(200).json({
       success: true,
@@ -124,23 +95,14 @@ const updateClass = async (req, res, next) => {
       }
     }
 
-    // Re-run validation on students if provided
-    if (updateData.students !== undefined) {
-      const areStudentsValid = await validateStudents(updateData.students);
-      if (!areStudentsValid) {
-        return res.status(400).json({
-          success: false,
-          message: "All students must be valid users with 'student' role"
-        });
-      }
-    }
+    // Remove students from update data if passed
+    delete updateData.students;
 
     const updatedClass = await Class.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true
     })
-      .populate("classTeacher", "name email role")
-      .populate("students", "name email role");
+      .populate("classTeacher", "name email role");
 
     if (!updatedClass) {
       return res.status(404).json({

@@ -12,19 +12,10 @@ const classSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-    classTeacher: {
+        classTeacher: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
-    },
-    students: {
-      type: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User"
-        }
-      ],
-      default: []
     },
     isActive: {
       type: Boolean,
