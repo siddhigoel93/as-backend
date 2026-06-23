@@ -55,15 +55,10 @@ const createClass = async (req, res, next) => {
   }
 };
 
-// GET /api/classes (Admin + Teacher only)
+// GET /api/classes (Admin only)
 const getClasses = async (req, res, next) => {
   try {
-    let query = {};
-    if (req.user.role === "teacher") {
-      query.classTeacher = req.user._id;
-    }
-
-    const classes = await Class.find(query)
+    const classes = await Class.find({})
       .populate("classTeacher", "name email role");
 
     res.status(200).json({
