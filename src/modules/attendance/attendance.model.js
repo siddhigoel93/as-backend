@@ -1,74 +1,42 @@
-const mockAttendance = {
-  2026: {
-    // May 2026
-    5: [
-      { date: "2026-05-01", status: "present", checkIn: "09:02", checkOut: "18:05" },
-      { date: "2026-05-02", status: "present", checkIn: "08:58", checkOut: "18:00" },
-      { date: "2026-05-03", status: "weekend", checkIn: null, checkOut: null },
-      { date: "2026-05-04", status: "weekend", checkIn: null, checkOut: null },
-      { date: "2026-05-05", status: "present", checkIn: "09:10", checkOut: "18:00" },
-      { date: "2026-05-06", status: "absent",  checkIn: null,    checkOut: null },
-      { date: "2026-05-07", status: "present", checkIn: "09:00", checkOut: "17:55" },
-      { date: "2026-05-08", status: "present", checkIn: "09:05", checkOut: "18:10" },
-      { date: "2026-05-09", status: "present", checkIn: "08:50", checkOut: "18:00" },
-      { date: "2026-05-10", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-05-11", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-05-12", status: "leave",   checkIn: null,    checkOut: null },
-      { date: "2026-05-13", status: "leave",   checkIn: null,    checkOut: null },
-      { date: "2026-05-14", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-05-15", status: "present", checkIn: "09:03", checkOut: "18:05" },
-      { date: "2026-05-16", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-05-17", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-05-18", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-05-19", status: "holiday", checkIn: null,    checkOut: null },
-      { date: "2026-05-20", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-05-21", status: "present", checkIn: "09:01", checkOut: "18:00" },
-      { date: "2026-05-22", status: "absent",  checkIn: null,    checkOut: null },
-      { date: "2026-05-23", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-05-24", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-05-25", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-05-26", status: "present", checkIn: "08:55", checkOut: "18:00" },
-      { date: "2026-05-27", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-05-28", status: "present", checkIn: "09:05", checkOut: "18:10" },
-      { date: "2026-05-29", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-05-30", status: "present", checkIn: "08:59", checkOut: "18:00" },
-      { date: "2026-05-31", status: "weekend", checkIn: null,    checkOut: null },
-    ],
+const mongoose = require("mongoose");
 
-    // June 2026
-    6: [
-      { date: "2026-06-01", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-02", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-03", status: "present", checkIn: "09:02", checkOut: "18:05" },
-      { date: "2026-06-04", status: "present", checkIn: "08:50", checkOut: "17:55" },
-      { date: "2026-06-05", status: "absent",  checkIn: null,    checkOut: null },
-      { date: "2026-06-06", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-07", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-08", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-09", status: "present", checkIn: "09:10", checkOut: "18:00" },
-      { date: "2026-06-10", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-11", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-12", status: "leave",   checkIn: null,    checkOut: null },
-      { date: "2026-06-13", status: "present", checkIn: "09:05", checkOut: "18:10" },
-      { date: "2026-06-14", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-15", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-16", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-17", status: "present", checkIn: "08:55", checkOut: "18:00" },
-      { date: "2026-06-18", status: "holiday", checkIn: null,    checkOut: null },
-      { date: "2026-06-19", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-20", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-21", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-22", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-23", status: "present", checkIn: "09:01", checkOut: "18:05" },
-      { date: "2026-06-24", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-25", status: "absent",  checkIn: null,    checkOut: null },
-      { date: "2026-06-26", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-27", status: "present", checkIn: "09:00", checkOut: "18:00" },
-      { date: "2026-06-28", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-29", status: "weekend", checkIn: null,    checkOut: null },
-      { date: "2026-06-30", status: "present", checkIn: "09:00", checkOut: "18:00" },
-    ],
+const attendanceRecordSchema = new mongoose.Schema({
+  student: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
   },
-};
+  status: {
+    type: String,
+    enum: ["Present", "Absent"],
+    required: true
+  }
+}, { _id: false });
 
-module.exports = mockAttendance;
+const attendanceSchema = new mongoose.Schema(
+  {
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+      required: true
+    },
+    date: {
+      type: Date,
+      required: true
+    },
+    markedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    records: [attendanceRecordSchema]
+  },
+  {
+    timestamps: true
+  }
+);
+
+// Add a unique compound index on classId + date
+attendanceSchema.index({ classId: 1, date: 1 }, { unique: true });
+
+module.exports = mongoose.model("Attendance", attendanceSchema);
