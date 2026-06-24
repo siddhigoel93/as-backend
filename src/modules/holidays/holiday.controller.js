@@ -1,6 +1,5 @@
 const Holiday = require("./holiday.model");
 
-// POST /api/holidays (Admin only)
 const createHoliday = async (req, res, next) => {
   try {
     const { title, date, description } = req.body;
@@ -11,7 +10,6 @@ const createHoliday = async (req, res, next) => {
         message: "Title and date are required"
       });
     }
-
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       return res.status(400).json({
@@ -45,7 +43,7 @@ const createHoliday = async (req, res, next) => {
   }
 };
 
-// GET /api/holidays
+
 const getHolidays = async (req, res, next) => {
   try {
     const { month, year, date } = req.query;
@@ -110,7 +108,6 @@ const getHolidays = async (req, res, next) => {
   }
 };
 
-// PUT /api/holidays/:id 
 const updateHoliday = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -159,6 +156,7 @@ const updateHoliday = async (req, res, next) => {
     next(error);
   }
 };
+
 
 module.exports = {
   createHoliday,
