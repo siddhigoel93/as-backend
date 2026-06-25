@@ -8,6 +8,7 @@ const authRoutes = require("./modules/auth/auth.routes.js");
 const holidayRoutes = require("./modules/holidays/holiday.routes.js");
 const classRoutes = require("./modules/classes/class.routes.js");
 const userRoutes = require("./modules/users/user.routes.js");
+const assignmentRoutes = require("./modules/assignments/assignment.routes.js");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/holidays", holidayRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/assignments", assignmentRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ status: "ok", message: "ERP Backend is running " });
