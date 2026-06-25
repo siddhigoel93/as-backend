@@ -195,32 +195,6 @@ router.get("/class/:classId", authenticate, authorize("admin", "teacher"), getCl
  */
 router.put("/:id", authenticate, authorize("admin", "teacher"), updateAssignment);
 
-/**
- * @swagger
- * /api/assignments/{id}:
- *   delete:
- *     summary: Delete an assignment
- *     description: Delete an assignment. Admin and teacher only.
- *     tags:
- *       - Assignments
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Assignment deleted successfully
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       404:
- *         description: Assignment not found
- */
 router.delete("/:id", authenticate, authorize("admin", "teacher"), deleteAssignment);
 
 module.exports = router;
