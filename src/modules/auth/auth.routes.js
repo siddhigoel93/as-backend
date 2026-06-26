@@ -1,13 +1,18 @@
 const express = require("express");
 const router = express.Router();
 
+
 const {
-  registerUser,
-  loginUser,
-  getMe
+    registerUser,
+    loginUser,
+    getMe,
+    forgotPassword,
+    verifyOtp,
+    resetPassword
 } = require("./auth.controller");
 
 const authenticate = require("../../middlewares/authenticate");
+const sendEmail = require("../../utils/sendEmail");
 
 /**
  * @swagger
@@ -314,5 +319,13 @@ router.post("/login", loginUser);
  *               message: "Internal server error"
  */
 router.get("/me", authenticate, getMe);
+
+router.post("/forgot-password", forgotPassword);
+
+router.post("/verify-otp", verifyOtp);
+
+router.post("/reset-password", resetPassword);
+
+
 
 module.exports = router;
